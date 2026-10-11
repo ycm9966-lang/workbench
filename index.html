@@ -6,6 +6,7 @@
 <title>我的个人工作台</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f3f4f7;color:#26282c;font-size:14px;line-height:1.6}
 .app{display:flex;min-height:100vh}
 .sidebar{width:190px;flex-shrink:0;background:#1f2437;color:#aab3c5;position:sticky;top:0;height:100vh;padding:16px 0;overflow:auto}
@@ -86,7 +87,7 @@ h3{font-size:16px;margin-bottom:12px}
 .overdue{color:#d02b30;font-size:13px;margin-top:6px}
 a{color:#3b5fe0}
 .note-box{font-size:12.5px;color:#5c6270;background:#fff8e6;border:1px solid #f5e3ad;border-radius:8px;padding:10px 14px;margin-bottom:14px}
-@media (max-width:860px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.frow3{grid-template-columns:1fr}.sidebar{width:60px}.sidebar .brand{display:none}.nav-btn{padding:12px 0;text-align:center;font-size:16px}}
+@media (max-width:860px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.frow3{grid-template-columns:1fr}.app{display:block}.sidebar{width:100%;height:auto;position:static;display:flex;overflow-x:auto;padding:0;border-bottom:1px solid rgba(255,255,255,.08)}.sidebar .brand{display:none}.nav-btn{white-space:nowrap;padding:12px 14px;border-left:none;border-bottom:3px solid transparent;flex-shrink:0}.nav-btn.active{border-bottom-color:#4f6df7}main{padding:14px 12px}.mask{padding:20px 10px}.modal{padding:16px 14px}}
 </style>
 </head>
 <body>
