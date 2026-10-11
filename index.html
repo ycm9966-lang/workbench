@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的个人工作台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f3f4f7;color:#26282c;font-size:14px;line-height:1.6}
+.app{display:flex;min-height:100vh}
+.sidebar{width:190px;flex-shrink:0;background:#1f2437;color:#aab3c5;position:sticky;top:0;height:100vh;padding:16px 0;overflow:auto}
+.sidebar .brand{color:#fff;font-size:16px;font-weight:600;padding:6px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+.nav-btn{display:block;width:100%;text-align:left;padding:10px 18px;background:none;border:none;color:#aab3c5;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-btn.active{color:#fff;background:rgba(79,109,247,.18);border-left-color:#4f6df7}
+main{flex:1;padding:22px;min-width:0}
+.wrap{max-width:1060px;margin:0 auto}
+h2.page-title{font-size:19px;margin-bottom:14px}
+h3{font-size:16px;margin-bottom:12px}
+.card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:14px}
+.card h4{font-size:14px;margin-bottom:10px;color:#3a3f4d}
+.grid{display:grid;gap:12px;margin-bottom:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.stat{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.stat .num{font-size:24px;font-weight:700;color:#4f6df7}
+.stat .lbl{font-size:12px;color:#8a90a0;margin-top:2px}
+.stat .sub{font-size:12px;color:#8a90a0}
+.btn{background:#4f6df7;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
+.btn:hover{background:#3d5be0}
+.btn.ghost{background:#fff;color:#4f6df7;border:1px solid #c9d4fb}
+.btn.ghost:hover{background:#f2f5ff}
+.btn.small{padding:4px 10px;font-size:12px;border-radius:6px}
+.btn.danger{background:#e5484d}
+.btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;white-space:nowrap}
+.b-gray{background:#eef0f4;color:#5c6270}
+.b-blue{background:#e5edff;color:#3b5fe0}
+.b-green{background:#e3f6e8;color:#1e8e4a}
+.b-orange{background:#fff0e0;color:#b56a00}
+.b-red{background:#fde8e8;color:#d02b30}
+.b-purple{background:#f1e8fd;color:#7a3ec8}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:#8a90a0;font-weight:500;padding:8px 10px;border-bottom:1px solid #eceef2;white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f2f3f6;vertical-align:top}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover{background:#f7f9ff}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pill{padding:6px 14px;border-radius:16px;background:#fff;border:1px solid #e3e5ea;cursor:pointer;font-size:13px;color:#4a4f5c}
+.pill.active{background:#1f2437;color:#fff;border-color:#1f2437}
+.empty{color:#9aa0ae;padding:18px;text-align:center;background:#fafbfd;border-radius:8px;font-size:13px}
+.mask{position:fixed;inset:0;background:rgba(20,24,38,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow:auto}
+.modal{background:#fff;border-radius:12px;max-width:680px;width:100%;padding:22px 24px;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal h3{margin-bottom:14px}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:12px;color:#6b7180;margin-bottom:4px}
+.f input[type=text],.f input[type=date],.f input[type=time],.f input[type=number],.f input[type=url],.f select,.f textarea{width:100%;border:1px solid #d8dbe2;border-radius:7px;padding:7px 10px;font-size:13px;font-family:inherit;background:#fff}
+.f textarea{resize:vertical}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tags .ck{background:#f3f4f8;border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer}
+.tags .ck input{margin-right:3px}
+.hint{font-size:12px;color:#8a90a0;background:#f6f8fd;border-radius:7px;padding:8px 12px;margin:6px 0 12px}
+.goal{color:#5c6270;font-size:12.5px;margin:6px 0}
+.pc-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pc-top b{font-size:14.5px}
+.meta{font-size:12px;color:#8a90a0;margin-top:8px}
+.prog{display:flex;align-items:center;gap:10px;margin:8px 0}
+.prog .bar{flex:1;height:7px;background:#edeff3;border-radius:4px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#4f6df7;border-radius:4px}
+.prog span{font-size:12px;color:#5c6270;white-space:nowrap}
+.kcard{border-bottom:1px solid #f0f1f5;padding:12px 6px;cursor:pointer}
+.kcard:hover{background:#f8faff}
+.kcard .t{font-weight:600}
+.kcard .c{color:#4a4f5c;margin:4px 0;white-space:pre-wrap}
+.kcard .m{font-size:12px;color:#8a90a0}
+.star{color:#e6a700;font-weight:700}
+.home-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.home-head .date{color:#6b7180;font-size:13px;margin-top:3px}
+.sec-title{font-size:15px;font-weight:600;margin:20px 0 10px;color:#2c3040}
+.list-item{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #f0f1f5;font-size:13px;align-items:center}
+.list-item:last-child{border-bottom:none}
+.taskline{padding:7px 10px;border:1px solid #eef0f4;border-radius:8px;margin-bottom:7px;font-size:13px;display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fbfcfe}
+.overdue{color:#d02b30;font-size:13px;margin-top:6px}
+a{color:#3b5fe0}
+.note-box{font-size:12.5px;color:#5c6270;background:#fff8e6;border:1px solid #f5e3ad;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+@media (max-width:860px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.frow3{grid-template-columns:1fr}.sidebar{width:60px}.sidebar .brand{display:none}.nav-btn{padding:12px 0;text-align:center;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">我的个人工作台</div>
+  <button class="nav-btn active" data-page="home" onclick="go('home')">首页</button>
+  <button class="nav-btn" data-page="daily" onclick="go('daily')">每日记录</button>
+  <button class="nav-btn" data-page="tasks" onclick="go('tasks')">任务</button>
+  <button class="nav-btn" data-page="projects" onclick="go('projects')">项目</button>
+  <button class="nav-btn" data-page="know" onclick="go('know')">知识灵感库</button>
+  <button class="nav-btn" data-page="fin" onclick="go('fin')">财务</button>
+  <button class="nav-btn" data-page="review" onclick="go('review')">复盘</button>
+  <button class="nav-btn" data-page="settings" onclick="go('settings')">设置</button>
+</aside>
+<main id="main"></main>
+</div>
+<div id="mask" class="mask" hidden onclick="closeModal()"></div>
+<script>
+/* ================= 基础工具 ================= */
+var LS = 'pw_data_v1';
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function fmtD(d){var p=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())}
+function today(){return fmtD(new Date())}
+function addDays(s,n){var a=s.split('-').map(Number);return fmtD(new Date(a[0],a[1]-1,a[2]+n))}
+function weekRange(){var n=new Date();var wd=(n.getDay()+6)%7;var mon=addDays(fmtD(n),-wd);return [mon,addDays(mon,6)]}
+function monthRange(){var n=new Date();return [fmtD(new Date(n.getFullYear(),n.getMonth(),1)),fmtD(new Date(n.getFullYear(),n.getMonth()+1,0))]}
+function sel(id,opts,val){var arr=Array.isArray(opts)?opts:opts.split(',');return '<select id="'+id+'">'+arr.map(function(o){var sv=(o==='')?'selected':'';var so=String(o)===String(val)?'selected':'';return '<option value="'+esc(o)+'" '+so+'>'+(o===''?'（未填写）':esc(o))+'</option>'}).join('')+'</select>'}
+function badge(cls,txt){return '<span class="badge b-'+cls+'">'+esc(txt)+'</span>'}
+function stColor(s){return {'待办':'gray','进行中':'blue','已完成':'green','已取消':'gray','未开始':'gray','休息日':'purple','规划中':'blue','暂停':'orange'}[s]||'gray'}
+function priColor(p){return {'P1':'red','P2':'orange','P3':'gray'}[p]||'gray'}
+
+/* ================= 常量 ================= */
+var TASK_DOMAINS=['教学','教研','运动','学习','生活','财务','个人成长'];
+var PROJ_DOMAINS=['教学','教研','职业发展','健康','学习','财务','个人成长'];
+var EX_TYPES=['休息','游泳','骑行','力量训练','拉伸','散步','其他'];
+var MOODS=['','开心','平静','疲惫','焦虑','低落','其他'];
+var WORK_STATUS=['未开始','进行中','已完成','休息日'];
+var TASK_STATUS=['待办','进行中','已完成','已取消'];
+var PRI=['P1','P2','P3'];
+var FIN_TYPES=['收入','支出','还款','储蓄转入','储蓄转出'];
+var FIN_CATS=['工资','餐饮','交通','购物','生活','还贷','储蓄','其他'];
+var ACCOUNTS=['工资卡','支付宝','微信','现金','其他'];
+var K_TYPES=['学习笔记','句子摘抄','阅读记录','生活感悟'];
+var K_TAGS=['化学','教育','成长','生活','关系','自由','财务','健康'];
+var PROJ_STATUS=['规划中','进行中','暂停','已完成'];
+
+/* ================= 数据层 ================= */
+var db=null;
+function seed(){
+  function P(name,domain,goal,nextStep){return {id:uid(),name:name,domain:domain,goal:goal,status:'进行中',startDate:'',dueDate:'',keyResults:'',files:'',review:'',nextStep:nextStep||''}}
+  return {
+    dailyLogs:[],tasks:[],knowledge:[],finance:[],reviews:[],
+    projects:[
+      P('高中化学教学与备课积累','教学','持续积累教学设计、课件、实验方案与备课素材，形成个人教学资源库。','整理本周备课资源'),
+      P('高中化学原创试题及命题研究','教研','开展原创试题命制与命题规律研究，形成可展示、可发表的命题成果。','确定一个命题主题'),
+      P('教研论文与成果申报','教研','完成教研论文写作、投稿与教学成果申报材料准备。','列出论文提纲'),
+      P('职称评审材料归档','职业发展','按评审要求分类归档教学、教研、荣誉等各类证明材料。','建立归档目录'),
+      P('健康管理与运动习惯','健康','建立可持续的运动与作息习惯，配合减脂目标稳步推进。','安排本周运动'),
+      P('专业学习与个人能力提升','学习','坚持专业阅读与化学前沿学习，积累个人知识库。','确定本月阅读书目'),
+      P('个人财务规划与储蓄目标','财务','合理规划收支，按计划偿还贷款并达成储蓄目标。','记录本月预算')
+    ]
+  };
+}
+function load(){
+  try{var d=JSON.parse(localStorage.getItem(LS));if(d&&d.projects&&d.dailyLogs){return d}}catch(e){}
+  return seed();
+}
+function save(){localStorage.setItem(LS,JSON.stringify(db))}
+db=load();
+
+/* 关联计算：任务按计划日期/完成日期自动出现在对应每日记录中，无需重复录入 */
+function tasksOn(date){return db.tasks.filter(function(x){return x.planDate===date||(x.status==='已完成'&&x.doneDate===date)})}
+function projTasks(pid){return db.tasks.filter(function(x){return x.projectId===pid&&x.status!=='已取消'})}
+function projName(pid){var p=db.projects.find(function(x){return x.id===pid});return p?p.name:''}
+function projOpts(val){var h='<select id="t_proj"><option value="">（无关联项目）</option>'+db.projects.map(function(p){return '<option value="'+p.id+'"'+(p.id===val?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'</select>';return h}
+
+/* ================= 路由 ================= */
+var page='home';
+var taskTab='today',knowTab='all',finTab='month';
+function go(p){page=p;render()}
+function render(){
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.page===page)});
+  var m={home:vHome,daily:vDaily,tasks:vTasks,projects:vProjects,know:vKnow,fin:vFin,review:vReview,settings:vSettings};
+  $('#main').innerHTML='<div class="wrap">'+m[page]()+'</div>';
+}
+
+/* ================= 弹窗 ================= */
+function openModal(html){$('#mask').innerHTML='<div class="modal" onclick="event.stopPropagation()">'+html+'</div>';$('#mask').hidden=false}
+function closeModal(){$('#mask').hidden=true;$('#mask').innerHTML=''}
+
+/* ================= 首页 ================= */
+function vHome(){
+  var t=today(),wr=weekRange(),mr=monthRange();
+  var isAct=function(x){return x.status==='待办'||x.status==='进行中'};
+  var todayLog=db.dailyLogs.find(function(l){return l.date===t});
+  var todayTasks=db.tasks.filter(function(x){return x.planDate===t&&x.status!=='已取消'&&x.status!=='已完成'});
+  var todayDone=db.tasks.filter(function(x){return x.status==='已完成'&&x.doneDate===t});
+  var weekLogs=db.dailyLogs.filter(function(l){return l.date>=wr[0]&&l.date<=t});
+  var exLogs=weekLogs.filter(function(l){return l.exerciseMin>0&&l.exerciseType!=='休息'});
+  var exMin=exLogs.reduce(function(a,b){return a+b.exerciseMin},0);
+  var learnMin=weekLogs.reduce(function(a,b){return a+(b.learnMin||0)},0);
+  var sqLogs=weekLogs.filter(function(l){return l.sleepQuality>0});
+  var overdue=db.tasks.filter(function(x){return isAct(x)&&x.dueDate&&x.dueDate<t});
+  var p1Today=todayTasks.filter(function(x){return x.priority==='P1'});
+  var running=db.projects.filter(function(p){return p.status==='进行中'}).slice().sort(function(a,b){return (a.dueDate||'9999-12-31')<(b.dueDate||'9999-12-31')?-1:1});
+  var star=db.knowledge.filter(function(k){return k.starred}).sort(function(a,b){return (b.recordDate||'').localeCompare(a.recordDate||'')})[0];
+  var jyDone=db.tasks.filter(function(x){return x.domain==='教研'&&x.status==='已完成'&&x.doneDate}).sort(function(a,b){return b.doneDate.localeCompare(a.doneDate)})[0];
+  var weekReview=db.reviews.find(function(r){return r.period==='每周'&&r.startDate===wr[0]});
+  var monthReview=db.reviews.find(function(r){return r.period==='每月'&&r.startDate===mr[0]});
+  var weekTodo=db.tasks.filter(function(x){return isAct(x)&&x.planDate>=wr[0]&&x.planDate<=wr[1]});
+  var soonProj=db.projects.filter(function(p){return (p.status==='进行中'||p.status==='规划中')&&p.dueDate&&p.dueDate>=t&&p.dueDate<=addDays(t,14)}).sort(function(a,b){return a.dueDate<b.dueDate?-1:1});
+
+  var taskLine=function(x){return '<div class="taskline"><span>'+badge(priColor(x.priority),x.priority)+' '+esc(x.name)+'</span><span>'+badge(stColor(x.status),x.status)+(x.dueDate?'<span style="font-size:12px;color:#8a90a0">截止 '+x.dueDate+'</span>':'')+'</span></div>'};
+
+  var h='';
+  /* 第一部分：顶部 */
+  h+='<div class="home-head"><div><h2 class="page-title">我的个人工作台</h2><div class="date">'+t+'（星期'+'日一二三四五六'.charAt(new Date().getDay())+'）</div></div>'
+   +'<div class="btns" style="margin:0">'
+   +'<button class="btn" onclick="openDaily()">'+(todayLog?'打开今日记录':'新建今日记录')+'</button>'
+   +'<button class="btn ghost" onclick="openTask()">新增任务</button>'
+   +'<button class="btn ghost" onclick="openQuick()">记录一句话</button>'
+   +'<button class="btn ghost" onclick="openFin()">记一笔收支</button></div></div>';
+
+  /* 第二部分：今日概览 */
+  h+='<div class="sec-title">今日概览</div><div class="grid g4">'
+   +'<div class="stat"><div class="num">'+todayTasks.length+'</div><div class="lbl">今日待办任务</div></div>'
+   +'<div class="stat"><div class="num">'+todayDone.length+'</div><div class="lbl">今日已完成任务</div></div>'
+   +'<div class="stat"><div class="num">'+exLogs.length+'<span style="font-size:14px"> 次</span></div><div class="lbl">本周运动</div><div class="sub">共 '+exMin+' 分钟</div></div>'
+   +'<div class="stat"><div class="num">'+learnMin+'<span style="font-size:14px"> 分钟</span></div><div class="lbl">本周学习时长</div></div>'
+   +'<div class="stat"><div class="num" style="font-size:18px;padding-top:4px">'+(todayLog?'<span style="color:#1e8e4a">已创建</span>':'<span style="color:#b56a00">未创建</span>')+'</div><div class="lbl">今日记录 '+(todayLog?'':'<button class="btn small" onclick="openDaily()">去创建</button>')+'</div></div>'
+   +'</div>';
+
+  /* 第三部分：今日行动 */
+  h+='<div class="sec-title">今日行动</div><div class="grid g2">';
+  h+='<div class="card"><h4>今日 P1 任务</h4>'+(p1Today.length?p1Today.map(taskLine).join(''):'<div class="empty">今日无 P1 任务</div>')+'</div>';
+  h+='<div class="card"><h4>今日待办</h4>'+(todayTasks.length?todayTasks.map(taskLine).join(''):'<div class="empty">今日暂无待办任务</div>')
+   +(overdue.length?'<div class="overdue">已逾期任务 '+overdue.length+' 项：'+overdue.slice(0,3).map(function(x){return esc(x.name)}).join('、')+(overdue.length>3?' 等':'')+'　<button class="btn small ghost" onclick="taskTab=\'overdue\';go(\'tasks\')">查看</button></div>':'')+'</div>';
+  h+='</div>';
+
+  /* 第四部分：长期项目 */
+  h+='<div class="sec-title">长期项目</div><div class="grid g2">';
+  if(running.length){running.forEach(function(p){h+=projCard(p)})}
+  else h+='<div class="empty">暂无进行中的项目</div>';
+  h+='</div>';
+
+  /* 第五部分：个人成长 */
+  h+='<div class="sec-title">个人成长</div><div class="grid g4">';
+  h+='<div class="stat"><div class="num">'+exLogs.length+'<span style="font-size:14px"> 次 / '+exMin+' 分</span></div><div class="lbl">本周运动概览</div></div>';
+  h+='<div class="stat"><div class="num">'+(sqLogs.length?(sqLogs.reduce(function(a,b){return a+b.sleepQuality},0)/sqLogs.length).toFixed(1):'—')+'</div><div class="lbl">本周平均睡眠质量'+(sqLogs.length?'（'+sqLogs.length+' 天有记录）':'（本周未记录）')+'</div></div>';
+  h+='<div class="stat"><div class="num">'+weekLogs.filter(function(l){return l.learnMin>0}).length+'<span style="font-size:14px"> 次</span></div><div class="lbl">本周学习记录 · 共 '+learnMin+' 分钟</div></div>';
+  h+='<div class="stat" style="grid-column:span 1"><div class="lbl" style="margin-bottom:6px">最新精选摘抄</div>'+(star?'<div style="font-size:13px">"'+esc(star.content.slice(0,60))+(star.content.length>60?'…':'')+'"<div class="sub" style="font-size:12px;color:#8a90a0;margin-top:4px">—— '+(esc(star.source||star.title))+' · '+star.recordDate+'</div></div>':'<div class="sub">暂无精选内容</div>')+'</div>';
+  h+='</div>';
+  h+='<div class="card"><h4>最近完成的教研成果</h4>'+(jyDone?'<div class="list-item"><span>'+esc(jyDone.name)+(jyDone.output?'<div style="color:#8a90a0;font-size:12px">产出：'+esc(jyDone.output)+'</div>':'')+'</span><span style="font-size:12px;color:#8a90a0">'+jyDone.doneDate+'</span></div>':'<div class="empty">暂无记录（完成后将自动归档，可用于年度总结与职称评审）</div>')+'</div>';
+
+  /* 第六部分：周期复盘 */
+  h+='<div class="sec-title">周期复盘</div><div class="grid g2">';
+  h+='<div class="card"><h4>本周复盘（'+wr[0]+' ~ '+wr[1]+'）</h4>'
+   +(weekReview?'<div class="list-item"><span>'+esc(weekReview.name)+'</span><button class="btn small ghost" onclick="openReview(\''+weekReview.id+'\')">查看编辑</button></div>':'<div class="empty" style="margin-bottom:10px">本周复盘尚未创建</div><button class="btn small" onclick="genReview(\'每周\')">生成本周复盘草稿</button>')
+   +'<div style="margin-top:10px"><h4>本周待完成任务（'+weekTodo.length+' 项）</h4>'
+   +(weekTodo.length?weekTodo.slice(0,5).map(function(x){return '<div class="list-item"><span>'+badge(priColor(x.priority),x.priority)+' '+esc(x.name)+'</span><span style="font-size:12px;color:#8a90a0">'+x.planDate+'</span></div>'}).join(''):'<div class="empty">本周暂无待办</div>')+'</div></div>';
+  h+='<div class="card"><h4>本月复盘（'+mr[0].slice(0,7)+'）</h4>'
+   +(monthReview?'<div class="list-item"><span>'+esc(monthReview.name)+'</span><button class="btn small ghost" onclick="openReview(\''+monthReview.id+'\')">查看编辑</button></div>':'<div class="empty" style="margin-bottom:10px">本月复盘尚未创建</div><button class="btn small" onclick="genReview(\'每月\')">生成本月复盘草稿</button>')
+   +'<div style="margin-top:10px"><h4>近期截止项目（14 天内）</h4>'
+   +(soonProj.length?soonProj.map(function(p){return '<div class="list-item"><span>'+esc(p.name)+'</span><span style="font-size:12px;color:#d02b30">截止 '+p.dueDate+'</span></div>'}).join(''):'<div class="empty">近期无截止项目</div>')+'</div></div>';
+  h+='</div>';
+  return h;
+}
+
+/* ================= 每日记录 ================= */
+function vDaily(){
+  var logs=db.dailyLogs.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
+  var h='<h2 class="page-title">每日记录 <button class="btn" style="margin-left:12px" onclick="openDaily()">新建每日记录</button></h2>';
+  h+='<div class="hint">每天只保留一条记录；运动允许选"休息"；不必每天填写全部字段。任务通过"计划日期/完成日期"自动关联，无需在此重复录入。</div>';
+  if(!logs.length)h+='<div class="empty">还没有每日记录，点击右上角"新建每日记录"开始</div>';
+  else{
+    h+='<div class="card" style="padding:6px 12px;overflow:auto"><table class="tbl"><tr><th>日期</th><th>工作状态</th><th>今日重点</th><th>工作总结</th><th>运动类型</th><th>运动时长</th><th>学习主题</th><th>睡眠质量</th><th>今日感悟</th></tr>';
+    logs.forEach(function(l){
+      h+='<tr class="click" onclick="openDaily(\''+l.id+'\')"><td>'+l.date+'</td><td>'+badge(stColor(l.workStatus),l.workStatus)+'</td><td>'+esc(l.focus||'—')+'</td><td>'+esc((l.summary||'—').slice(0,40))+'</td><td>'+esc(l.exerciseType||'—')+'</td><td>'+(l.exerciseMin?l.exerciseMin+' 分':'—')+'</td><td>'+esc(l.learnTopic||'—')+'</td><td>'+(l.sleepQuality?l.sleepQuality+' 分':'—')+'</td><td>'+esc((l.insight||'—').slice(0,30))+'</td></tr>';
+    });
+    h+='</table></div>';
+  }
+  return h;
+}
+function openDaily(id){
+  var isNew=!id;
+  var l=isNew?{id:uid(),date:today(),focus:'',summary:'',workStatus:'未开始',exerciseType:'休息',exerciseMin:'',diet:'',learnTopic:'',learnMin:'',bedtime:'',wakeTime:'',sleepQuality:'',energy:'',mood:'',insight:'',tomorrowFocus:''}
+    :db.dailyLogs.find(function(x){return x.id===id});
+  if(!l)return;
+  var planned=db.tasks.filter(function(x){return x.planDate===l.date&&x.status!=='已取消'});
+  var dn=planned.filter(function(x){return x.status==='已完成'}).length;
+  var rate=planned.length?Math.round(dn/planned.length*100)+'%':'不适用';
+  var linked=tasksOn(l.date);
+  var q='<h3>'+(isNew?'新建每日记录':'编辑每日记录 · '+l.date)+'</h3>'
+   +'<div class="hint">关联任务 '+planned.length+' 项，已完成 '+dn+' 项，完成率 '+rate+'（由任务的计划/完成日期自动汇总）</div>'
+   +(linked.length?'<div class="f"><label>今日任务（自动关联，点击任务名可编辑）</label>'+linked.map(function(x){return '<div class="taskline"><span onclick="openTask(\''+x.id+'\')" style="cursor:pointer;text-decoration:underline">'+esc(x.name)+'</span>'+badge(stColor(x.status),x.status)+'</div>'}).join('')+'</div>':'')
+   +'<div class="frow"><div class="f"><label>日期 *</label><input type="date" id="l_date" value="'+l.date+'"></div>'
+   +'<div class="f"><label>工作状态</label>'+sel('l_ws',WORK_STATUS,l.workStatus)+'</div></div>'
+   +'<div class="f"><label>今日重点（最重要的 1~3 件事）</label><input type="text" id="l_focus" value="'+esc(l.focus)+'"></div>'
+   +'<div class="f"><label>工作总结</label><textarea id="l_summary" rows="3">'+esc(l.summary)+'</textarea></div>'
+   +'<div class="frow3"><div class="f"><label>运动类型</label>'+sel('l_ex',EX_TYPES,l.exerciseType)+'</div>'
+   +'<div class="f"><label>运动时长（分钟）</label><input type="number" id="l_exmin" value="'+l.exerciseMin+'"></div>'
+   +'<div class="f"><label>饮食记录（选填）</label><input type="text" id="l_diet" value="'+esc(l.diet)+'"></div></div>'
+   +'<div class="frow"><div class="f"><label>学习主题</label><input type="text" id="l_topic" value="'+esc(l.learnTopic)+'"></div>'
+   +'<div class="f"><label>学习时长（分钟）</label><input type="number" id="l_lmin" value="'+l.learnMin+'"></div></div>'
+   +'<div class="frow3"><div class="f"><label>睡觉时间</label><input type="time" id="l_bt" value="'+l.bedtime+'"></div>'
+   +'<div class="f"><label>起床时间</label><input type="time" id="l_wt" value="'+l.wakeTime+'"></div>'
+   +'<div class="f"><label>今日心情</label>'+sel('l_mood',MOODS,l.mood)+'</div></div>'
+   +'<div class="frow"><div class="f"><label>睡眠质量（1~5 分）</label>'+sel('l_sq',['',1,2,3,4,5],l.sleepQuality)+'</div>'
+   +'<div class="f"><label>精力状态（1~5 分）</label>'+sel('l_en',['',1,2,3,4,5],l.energy)+'</div></div>'
+   +'<div class="f"><label>今日感悟</label><textarea id="l_insight" rows="2">'+esc(l.insight)+'</textarea></div>'
+   +'<div class="f"><label>明日重点</label><input type="text" id="l_tf" value="'+esc(l.tomorrowFocus)+'"></div>'
+   +'<div class="btns"><button class="btn" onclick="saveDaily(\''+(isNew?'':l.id)+'\')">保存</button>'
+   +(isNew?'':'<button class="btn danger" onclick="delRec(\'dailyLogs\',\''+l.id+'\')">删除</button>')
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>';
+  openModal(q);
+}
+function saveDaily(id){
+  var g=function(i){return $('#'+i).value};
+  var date=g('l_date');
+  if(!date){alert('请填写日期');return}
+  if(db.dailyLogs.some(function(x){return x.date===date&&x.id!==id})){alert('该日期已存在每日记录，每天只保留一条。已为你打开现有记录思路：请直接编辑当天记录。');return}
+  var rec={id:id||uid(),date:date,focus:g('l_focus'),summary:g('l_summary'),workStatus:g('l_ws'),exerciseType:g('l_ex'),exerciseMin:+g('l_exmin')||0,diet:g('l_diet'),learnTopic:g('l_topic'),learnMin:+g('l_lmin')||0,bedtime:g('l_bt'),wakeTime:g('l_wt'),sleepQuality:+g('l_sq')||0,energy:+g('l_en')||0,mood:g('l_mood'),insight:g('l_insight'),tomorrowFocus:g('l_tf')};
+  if(id){var i=db.dailyLogs.findIndex(function(x){return x.id===id});db.dailyLogs[i]=rec}
+  else db.dailyLogs.push(rec);
+  save();closeModal();render();
+}
+
+/* ================= 任务 ================= */
+function taskRow(x){
+  return '<tr class="click" onclick="openTask(\''+x.id+'\')"><td>'+esc(x.name)+'</td><td>'+esc(x.domain||'')+'</td><td>'+esc(projName(x.projectId)||'—')+'</td><td>'+(x.planDate||'—')+'</td><td>'+(x.dueDate||'—')+'</td><td>'+badge(priColor(x.priority),x.priority||'P3')+'</td><td>'+badge(stColor(x.status),x.status)+'</td><td>'+(x.estMin?x.estMin+' 分':'—')+'</td><td>'+(x.doneDate||'—')+'</td></tr>';
+}
+function vTasks(){
+  var t=today(),wr=weekRange();
+  var isAct=function(x){return x.status==='待办'||x.status==='进行中'};
+  var lists={
+    today:['今日待办',db.tasks.filter(function(x){return x.planDate===t&&isAct(x)})],
+    week:['本周待办（'+wr[0]+' ~ '+wr[1]+'）',db.tasks.filter(function(x){return x.planDate>=wr[0]&&x.planDate<=wr[1]&&isAct(x)})],
+    overdue:['逾期任务',db.tasks.filter(function(x){return x.dueDate&&x.dueDate<t&&isAct(x)}).sort(function(a,b){return a.dueDate<b.dueDate?-1:1})],
+    next7:['未来 7 天到期',db.tasks.filter(function(x){return x.dueDate&&x.dueDate>=t&&x.dueDate<=addDays(t,6)&&isAct(x)}).sort(function(a,b){return a.dueDate<b.dueDate?-1:1})],
+    doing:['进行中任务',db.tasks.filter(function(x){return x.status==='进行中'})],
+    done:['已完成任务',db.tasks.filter(function(x){return x.status==='已完成'}).sort(function(a,b){return (b.doneDate||'').localeCompare(a.doneDate||'')})],
+    all:['全部任务',db.tasks.slice().sort(function(a,b){return (b.planDate||'').localeCompare(a.planDate||'')})]
+  };
+  var h='<h2 class="page-title">任务管理 <button class="btn" style="margin-left:12px" onclick="openTask()">新增任务</button></h2>';
+  var pillDef=[['today','今日待办'],['week','本周待办'],['overdue','逾期任务'],['next7','未来 7 天'],['doing','进行中'],['done','已完成'],['domain','按领域分组'],['all','全部']];
+  h+='<div class="pills">'+pillDef.map(function(p){return '<button class="pill'+(taskTab===p[0]?' active':'')+'" onclick="taskTab=\''+p[0]+'\';render()">'+p[1]+'</button>'}).join('')+'</div>';
+  h+='<div class="card" style="padding:6px 12px;overflow:auto">';
+  if(taskTab==='domain'){
+    TASK_DOMAINS.forEach(function(d){
+      var arr=db.tasks.filter(function(x){return x.domain===d&&x.status!=='已取消'});
+      if(!arr.length)return;
+      h+='<h4 style="margin:12px 0 4px">'+d+'（'+arr.length+'）</h4><table class="tbl"><tr><th>任务</th><th>计划日期</th><th>截止</th><th>优先级</th><th>状态</th></tr>';
+      arr.forEach(function(x){h+='<tr class="click" onclick="openTask(\''+x.id+'\')"><td>'+esc(x.name)+'</td><td>'+(x.planDate||'—')+'</td><td>'+(x.dueDate||'—')+'</td><td>'+badge(priColor(x.priority),x.priority||'P3')+'</td><td>'+badge(stColor(x.status),x.status)+'</td></tr>'});
+      h+='</table>';
+    });
+    if(!db.tasks.length)h+='<div class="empty">暂无任务</div>';
+  }else{
+    var cur=lists[taskTab]||lists.today;
+    h+='<h4 style="margin:12px 0 4px">'+cur[0]+'（'+cur[1].length+'）</h4>';
+    if(!cur[1].length)h+='<div class="empty">暂无任务</div>';
+    else{h+='<table class="tbl"><tr><th>任务名称</th><th>领域</th><th>关联项目</th><th>计划日期</th><th>截止日期</th><th>优先级</th><th>状态</th><th>预计时长</th><th>完成日期</th></tr>'+cur[1].map(taskRow).join('')+'</table>'}
+  }
+  h+='</div><div class="hint">状态改为"已完成"时，系统自动填写实际完成日期；任务会自动出现在计划当天与完成当天的每日记录中，并自动计入关联项目的进度。</div>';
+  return h;
+}
+function openTask(id){
+  var isNew=!id;
+  var x=isNew?{id:uid(),name:'',domain:'教学',projectId:'',planDate:today(),dueDate:'',priority:'P2',status:'待办',estMin:'',doneDate:'',output:''}
+    :db.tasks.find(function(t){return t.id===id});
+  if(!x)return;
+  var q='<h3>'+(isNew?'新增任务':'编辑任务')+'</h3>'
+   +'<div class="f"><label>任务名称 *</label><input type="text" id="t_name" value="'+esc(x.name)+'"></div>'
+   +'<div class="frow3"><div class="f"><label>所属领域</label>'+sel('t_dom',TASK_DOMAINS,x.domain)+'</div>'
+   +'<div class="f"><label>优先级</label>'+sel('t_pri',PRI,x.priority)+'</div>'
+   +'<div class="f"><label>状态</label>'+sel('t_st',TASK_STATUS,x.status)+'</div></div>'
+   +'<div class="f"><label>关联项目</label>'+projOpts(x.projectId)+'</div>'
+   +'<div class="frow3"><div class="f"><label>计划日期</label><input type="date" id="t_plan" value="'+x.planDate+'"></div>'
+   +'<div class="f"><label>截止日期</label><input type="date" id="t_due" value="'+x.dueDate+'"></div>'
+   +'<div class="f"><label>预计时长（分钟）</label><input type="number" id="t_est" value="'+x.estMin+'"></div></div>'
+   +'<div class="f"><label>实际完成日期（状态改为"已完成"时自动填写）</label><input type="date" id="t_done" value="'+x.doneDate+'"></div>'
+   +'<div class="f"><label>完成产出（可用于年度总结与职称评审的成果证据）</label><input type="text" id="t_out" value="'+esc(x.output)+'"></div>'
+   +'<div class="hint">该任务会自动关联到计划日期的每日记录，无需手动挂接。</div>'
+   +'<div class="btns"><button class="btn" onclick="saveTask(\''+(isNew?'':x.id)+'\')">保存</button>'
+   +(isNew?'':'<button class="btn danger" onclick="delRec(\'tasks\',\''+x.id+'\')">删除</button>')
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>';
+  openModal(q);
+}
+function saveTask(id){
+  var g=function(i){return $('#'+i).value};
+  var name=g('t_name').trim();
+  if(!name){alert('请填写任务名称');return}
+  var rec={id:id||uid(),name:name,domain:g('t_dom'),projectId:g('t_proj'),planDate:g('t_plan'),dueDate:g('t_due'),priority:g('t_pri'),status:g('t_st'),estMin:+g('t_est')||0,doneDate:g('t_done'),output:g('t_out')};
+  if(rec.status==='已完成'&&!rec.doneDate)rec.doneDate=today();
+  if(rec.status!=='已完成')rec.doneDate=rec.status==='已取消'?rec.doneDate:'';
+  if(id){var i=db.tasks.findIndex(function(x){return x.id===id});db.tasks[i]=rec}
+  else db.tasks.push(rec);
+  save();closeModal();render();
+}
+
+/* ================= 项目 ================= */
+function projCard(p){
+  var ts=projTasks(p.id),dn=ts.filter(function(x){return x.status==='已完成'}).length;
+  var pct=ts.length?Math.round(dn/ts.length*100):null;
+  return '<div class="card" style="cursor:pointer" onclick="openProject(\''+p.id+'\')">'
+   +'<div class="pc-top"><b>'+esc(p.name)+'</b>'+badge('blue',p.domain)+badge(stColor(p.status),p.status)+'</div>'
+   +'<div class="goal">'+esc(p.goal||'')+'</div>'
+   +'<div class="prog"><div class="bar"><i style="width:'+(pct||0)+'%"></i></div><span>'+(pct===null?'暂无关联任务':dn+' / '+ts.length+' · '+pct+'%')+'</span></div>'
+   +'<div class="meta">'+(p.dueDate?'截止：'+p.dueDate:'未设截止日期')+(p.nextStep?'　·　下一步：'+esc(p.nextStep.slice(0,36)):'')+'</div></div>';
+}
+function vProjects(){
+  var h='<h2 class="page-title">项目与成果 <button class="btn" style="margin-left:12px" onclick="openProject()">新建项目</button></h2>';
+  h+='<div class="hint">任务总数、已完成任务数与项目进度由关联任务自动汇总（已完成 ÷ 任务总数；无任务时不计算）。项目均为预置内容，可调整、暂停或删除。</div>';
+  var groups={};PROJ_STATUS.forEach(function(s){groups[s]=db.projects.filter(function(p){return p.status===s})});
+  PROJ_STATUS.forEach(function(s){
+    if(!groups[s].length)return;
+    h+='<div class="sec-title">'+s+'（'+groups[s].length+'）</div><div class="grid g2">'+groups[s].map(projCard).join('')+'</div>';
+  });
+  if(!db.projects.length)h+='<div class="empty">暂无项目</div>';
+  return h;
+}
+function openProject(id){
+  var isNew=!id;
+  var p=isNew?{id:uid(),name:'',domain:'教学',goal:'',status:'规划中',startDate:today(),dueDate:'',keyResults:'',files:'',review:'',nextStep:''}
+    :db.projects.find(function(x){return x.id===id});
+  if(!p)return;
+  var ts=projTasks(p.id),dn=ts.filter(function(x){return x.status==='已完成'}).length;
+  var pct=ts.length?Math.round(dn/ts.length*100):null;
+  var q='<h3>'+(isNew?'新建项目':'编辑项目')+'</h3>'
+   +(isNew?'':'<div class="hint">关联任务 '+ts.length+' 项，已完成 '+dn+' 项'+(pct!==null?'，进度 '+pct+'%':'（暂无任务，不计算进度）')+'</div>')
+   +'<div class="f"><label>项目名称 *</label><input type="text" id="p_name" value="'+esc(p.name)+'"></div>'
+   +'<div class="frow"><div class="f"><label>项目领域</label>'+sel('p_dom',PROJ_DOMAINS,p.domain)+'</div>'
+   +'<div class="f"><label>当前状态</label>'+sel('p_st',PROJ_STATUS,p.status)+'</div></div>'
+   +'<div class="f"><label>项目目标</label><textarea id="p_goal" rows="2">'+esc(p.goal)+'</textarea></div>'
+   +'<div class="frow"><div class="f"><label>开始日期</label><input type="date" id="p_start" value="'+p.startDate+'"></div>'
+   +'<div class="f"><label>截止日期</label><input type="date" id="p_due" value="'+p.dueDate+'"></div></div>'
+   +'<div class="f"><label>关键成果（项目产出的证据与成果）</label><textarea id="p_key" rows="2">'+esc(p.keyResults)+'</textarea></div>'
+   +'<div class="f"><label>成果文件或链接（粘贴 URL）</label><input type="text" id="p_files" value="'+esc(p.files)+'" placeholder="例如：https://..."></div>'
+   +'<div class="f"><label>复盘总结</label><textarea id="p_rev" rows="2">'+esc(p.review)+'</textarea></div>'
+   +'<div class="f"><label>下一步行动</label><input type="text" id="p_next" value="'+esc(p.nextStep)+'"></div>'
+   +'<div class="btns"><button class="btn" onclick="saveProject(\''+(isNew?'':p.id)+'\')">保存</button>'
+   +(isNew?'':'<button class="btn danger" onclick="delProject(\''+p.id+'\')">删除项目</button>')
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>';
+  openModal(q);
+}
+function saveProject(id){
+  var g=function(i){return $('#'+i).value};
+  var name=g('p_name').trim();
+  if(!name){alert('请填写项目名称');return}
+  var rec={id:id||uid(),name:name,domain:g('p_dom'),goal:g('p_goal'),status:g('p_st'),startDate:g('p_start'),dueDate:g('p_due'),keyResults:g('p_key'),files:g('p_files'),review:g('p_rev'),nextStep:g('p_next')};
+  if(id){var i=db.projects.findIndex(function(x){return x.id===id});db.projects[i]=rec}
+  else db.projects.push(rec);
+  save();closeModal();render();
+}
+function delProject(id){
+  if(!confirm('确定删除该项目？其下任务的关联将被清空，任务本身保留。'))return;
+  db.projects=db.projects.filter(function(x){return x.id!==id});
+  db.tasks.forEach(function(x){if(x.projectId===id)x.projectId=''});
+  save();closeModal();render();
+}
+
+/* ================= 知识与灵感库 ================= */
+function vKnow(){
+  var mr=monthRange();
+  var arr;
+  if(knowTab==='chem')arr=db.knowledge.filter(function(k){return (k.tags||[]).indexOf('化学')>=0});
+  else if(knowTab==='read')arr=db.knowledge.filter(function(k){return k.type==='学习笔记'||k.type==='阅读记录'});
+  else if(knowTab==='quote')arr=db.knowledge.filter(function(k){return k.type==='句子摘抄'});
+  else if(knowTab==='life')arr=db.knowledge.filter(function(k){return k.type==='生活感悟'});
+  else if(knowTab==='star')arr=db.knowledge.filter(function(k){return k.starred&&k.recordDate>=mr[0]&&k.recordDate<=mr[1]});
+  else arr=db.knowledge;
+  arr=arr.slice().sort(function(a,b){return (b.recordDate||'').localeCompare(a.recordDate||'')});
+  var pillDef=[['all','全部'],['chem','化学专业学习'],['read','阅读与学习笔记'],['quote','句子摘抄'],['life','生活感悟'],['star','本月精选']];
+  var h='<h2 class="page-title">学习与灵感库 <button class="btn" style="margin-left:12px" onclick="openKnow()">新增记录</button> <button class="btn ghost" onclick="openQuick()">记一句话</button></h2>';
+  h+='<div class="pills">'+pillDef.map(function(p){return '<button class="pill'+(knowTab===p[0]?' active':'')+'" onclick="knowTab=\''+p[0]+'\';render()">'+p[1]+'</button>'}).join('')+'</div>';
+  h+='<div class="card">';
+  if(!arr.length)h+='<div class="empty">暂无内容，点击"新增记录"或"记一句话"</div>';
+  arr.forEach(function(k){
+    h+='<div class="kcard" onclick="openKnow(\''+k.id+'\')"><div class="t">'+(k.starred?'<span class="star">★ </span>':'')+esc(k.title)+' '+badge('blue',k.type)+' '+(k.tags||[]).map(function(t){return badge('gray',t)}).join(' ')+'</div>'
+     +'<div class="c">'+esc(k.content)+'</div>'
+     +'<div class="m">'+(k.source?'来源：'+esc(k.source)+'　':'')+(k.recordDate||'')+(projName(k.projectId)?'　·　项目：'+esc(projName(k.projectId)):'')+'</div></div>';
+  });
+  h+='</div>';
+  return h;
+}
+function openKnow(id){
+  var isNew=!id;
+  var k=isNew?{id:uid(),title:'',content:'',type:'学习笔记',tags:[],source:'',thought:'',recordDate:today(),projectId:'',starred:false}
+    :db.knowledge.find(function(x){return x.id===id});
+  if(!k)return;
+  var q='<h3>'+(isNew?'新增知识记录':'编辑知识记录')+'</h3>'
+   +'<div class="f"><label>标题 *</label><input type="text" id="k_title" value="'+esc(k.title)+'"></div>'
+   +'<div class="frow"><div class="f"><label>内容类型</label>'+sel('k_type',K_TYPES,k.type)+'</div>'
+   +'<div class="f"><label>记录日期</label><input type="date" id="k_date" value="'+k.recordDate+'"></div></div>'
+   +'<div class="f"><label>分类标签</label><div class="tags">'+K_TAGS.map(function(t){return '<label class="ck"><input type="checkbox" class="ktag" value="'+t+'" '+((k.tags||[]).indexOf(t)>=0?'checked':'')+'> '+t+'</label>'}).join('')+'</div></div>'
+   +'<div class="f"><label>内容</label><textarea id="k_content" rows="4">'+esc(k.content)+'</textarea></div>'
+   +'<div class="f"><label>来源（作者 / 书名 / 文章链接）</label><input type="text" id="k_source" value="'+esc(k.source)+'"></div>'
+   +'<div class="f"><label>个人思考</label><textarea id="k_thought" rows="2">'+esc(k.thought)+'</textarea></div>'
+   +'<div class="f"><label>关联项目（选填）</label>'+projOpts(k.projectId)+'</div>'
+   +'<div class="f"><label><input type="checkbox" id="k_star" '+(k.starred?'checked':'')+'> 是否精选</label></div>'
+   +'<div class="btns"><button class="btn" onclick="saveKnow(\''+(isNew?'':k.id)+'\')">保存</button>'
+   +(isNew?'':'<button class="btn danger" onclick="delRec(\'knowledge\',\''+k.id+'\')">删除</button>')
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>';
+  openModal(q);
+}
+function saveKnow(id){
+  var g=function(i){return $('#'+i).value};
+  var tags=[];document.querySelectorAll('.ktag').forEach(function(c){if(c.checked)tags.push(c.value)});
+  var title=g('k_title').trim()||g('k_content').trim().slice(0,20);
+  if(!title){alert('请填写标题或内容');return}
+  var rec={id:id||uid(),title:title,content:g('k_content'),type:g('k_type'),tags:tags,source:g('k_source'),thought:g('k_thought'),recordDate:g('k_date')||today(),projectId:g('t_proj'),starred:$('#k_star').checked};
+  if(id){var i=db.knowledge.findIndex(function(x){return x.id===id});db.knowledge[i]=rec}
+  else db.knowledge.push(rec);
+  save();closeModal();render();
+}
+function openQuick(){
+  openModal('<h3>记录一句话</h3>'
+   +'<div class="f"><label>内容（将保存为"句子摘抄"）</label><textarea id="q_c" rows="3"></textarea></div>'
+   +'<div class="f"><label>来源（作者 / 书名 / 链接，选填）</label><input type="text" id="q_s"></div>'
+   +'<div class="f"><label>个人思考（选填）</label><input type="text" id="q_t"></div>'
+   +'<div class="btns"><button class="btn" onclick="saveQuick()">保存</button><button class="btn ghost" onclick="closeModal()">取消</button></div>');
+}
+function saveQuick(){
+  var c=$('#q_c').value.trim();
+  if(!c){alert('请输入内容');return}
+  db.knowledge.push({id:uid(),title:c.slice(0,24),content:c,type:'句子摘抄',tags:[],source:$('#q_s').value,thought:$('#q_t').value,recordDate:today(),projectId:'',starred:false});
+  save();closeModal();render();
+}
+
+/* ================= 财务 ================= */
+function finRow(f){return '<tr class="click" onclick="openFin(\''+f.id+'\')"><td>'+esc(f.name)+'</td><td>'+f.date+'</td><td>'+badge(f.type==='收入'?'green':(f.type==='支出'?'red':'blue'),f.type)+'</td><td style="text-align:right">'+(f.amount||0).toFixed(2)+'</td><td>'+esc(f.cat||'')+'</td><td>'+esc(f.account||'')+'</td><td>'+(f.necessary?'必要':'—')+'</td><td>'+esc(f.note||'')+'</td></tr>'}
+function vFin(){
+  var mr=monthRange(),t=today();
+  var mon=db.finance.filter(function(f){return f.date>=mr[0]&&f.date<=mr[1]});
+  var sum=function(arr){return arr.reduce(function(a,b){return a+(+b.amount||0)},0)};
+  var inc=sum(mon.filter(function(f){return f.type==='收入'}));
+  var exp=sum(mon.filter(function(f){return f.type==='支出'}));
+  var rep=sum(mon.filter(function(f){return f.type==='还款'}));
+  var sin=sum(mon.filter(function(f){return f.type==='储蓄转入'}));
+  var sout=sum(mon.filter(function(f){return f.type==='储蓄转出'}));
+  var h='<h2 class="page-title">财务流水 <button class="btn" style="margin-left:12px" onclick="openFin()">记一笔</button></h2>';
+  h+='<div class="note-box">统计口径说明：「支出」仅统计日常消费；「还款」与「储蓄转入/转出」属于资金转移，<b>不计入普通消费</b>，避免重复记账。还款金额请另行与贷款本金余额核对。</div>';
+  h+='<div class="grid g4">'
+   +'<div class="stat"><div class="num" style="color:#1e8e4a">¥ '+inc.toFixed(2)+'</div><div class="lbl">本月收入</div></div>'
+   +'<div class="stat"><div class="num" style="color:#d02b30">¥ '+exp.toFixed(2)+'</div><div class="lbl">本月普通支出（不含还款与转账）</div></div>'
+   +'<div class="stat"><div class="num" style="color:#b56a00">¥ '+rep.toFixed(2)+'</div><div class="lbl">本月还款</div></div>'
+   +'<div class="stat"><div class="num">¥ '+(sin-sout).toFixed(2)+'</div><div class="lbl">本月净储蓄（转入 '+sin.toFixed(2)+' / 转出 '+sout.toFixed(2)+'）</div></div>'
+   +'</div>';
+  var pillDef=[['month','本月流水'],['last30','最近 30 天'],['cat','按分类汇总'],['all','全部流水']];
+  h+='<div class="pills">'+pillDef.map(function(p){return '<button class="pill'+(finTab===p[0]?' active':'')+'" onclick="finTab=\''+p[0]+'\';render()">'+p[1]+'</button>'}).join('')+'</div>';
+  h+='<div class="card" style="padding:6px 12px;overflow:auto">';
+  if(finTab==='cat'){
+    var expMon=mon.filter(function(f){return f.type==='支出'});
+    var byCat={};expMon.forEach(function(f){byCat[f.cat||'其他']=(byCat[f.cat||'其他']||0)+(+f.amount||0)});
+    var total=sum(expMon);
+    h+='<h4 style="margin:12px 0 4px">'+mr[0].slice(0,7)+' 普通支出按分类汇总</h4>';
+    if(!expMon.length)h+='<div class="empty">本月暂无支出记录</div>';
+    else{h+='<table class="tbl"><tr><th>分类</th><th style="text-align:right">金额</th><th>占比</th></tr>';
+      Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]}).forEach(function(c){
+        h+='<tr><td>'+esc(c)+'</td><td style="text-align:right">¥ '+byCat[c].toFixed(2)+'</td><td>'+Math.round(byCat[c]/total*100)+'%</td></tr>'});
+      h+='<tr><td><b>合计</b></td><td style="text-align:right"><b>¥ '+total.toFixed(2)+'</b></td><td>100%</td></tr></table>'}
+  }else{
+    var arr,title;
+    if(finTab==='month'){arr=mon.slice().sort(function(a,b){return b.date.localeCompare(a.date)});title='本月流水（'+mr[0].slice(0,7)+'）'}
+    else if(finTab==='last30'){arr=db.finance.filter(function(f){return f.date>=addDays(t,-29)&&f.date<=t}).sort(function(a,b){return b.date.localeCompare(a.date)});title='最近 30 天流水'}
+    else{arr=db.finance.slice().sort(function(a,b){return b.date.localeCompare(a.date)});title='全部流水'}
+    h+='<h4 style="margin:12px 0 4px">'+title+'（'+arr.length+' 笔）</h4>';
+    if(!arr.length)h+='<div class="empty">暂无记录</div>';
+    else h+='<table class="tbl"><tr><th>交易名称</th><th>日期</th><th>收支类型</th><th>金额</th><th>分类</th><th>账户</th><th>必要性</th><th>备注</th></tr>'+arr.map(finRow).join('')+'</table>';
+  }
+  h+='</div>';
+  return h;
+}
+function openFin(id){
+  var isNew=!id;
+  var f=isNew?{id:uid(),name:'',date:today(),type:'支出',amount:'',cat:'生活',account:'支付宝',necessary:false,note:''}
+    :db.finance.find(function(x){return x.id===id});
+  if(!f)return;
+  openModal('<h3>'+(isNew?'记一笔收支':'编辑收支')+'</h3>'
+   +'<div class="f"><label>交易名称 *</label><input type="text" id="f_name" value="'+esc(f.name)+'"></div>'
+   +'<div class="frow"><div class="f"><label>日期</label><input type="date" id="f_date" value="'+f.date+'"></div>'
+   +'<div class="f"><label>金额（元）</label><input type="number" step="0.01" id="f_amt" value="'+f.amount+'"></div></div>'
+   +'<div class="frow3"><div class="f"><label>收支类型</label>'+sel('f_type',FIN_TYPES,f.type)+'</div>'
+   +'<div class="f"><label>分类</label>'+sel('f_cat',FIN_CATS,f.cat)+'</div>'
+   +'<div class="f"><label>账户</label>'+sel('f_acc',ACCOUNTS,f.account)+'</div></div>'
+   +'<div class="f"><label><input type="checkbox" id="f_nec" '+(f.necessary?'checked':'')+'> 是否必要支出（仅用于支出类）</label></div>'
+   +'<div class="f"><label>备注</label><input type="text" id="f_note" value="'+esc(f.note)+'"></div>'
+   +'<div class="hint">提示：还贷请选「还款」类型、储蓄请选「储蓄转入/转出」，这样不会与日常消费重复统计。</div>'
+   +'<div class="btns"><button class="btn" onclick="saveFin(\''+(isNew?'':f.id)+'\')">保存</button>'
+   +(isNew?'':'<button class="btn danger" onclick="delRec(\'finance\',\''+f.id+'\')">删除</button>')
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>');
+}
+function saveFin(id){
+  var g=function(i){return $('#'+i).value};
+  var name=g('f_name').trim();
+  if(!name){alert('请填写交易名称');return}
+  var rec={id:id||uid(),name:name,date:g('f_date')||today(),type:g('f_type'),amount:+g('f_amt')||0,cat:g('f_cat'),account:g('f_acc'),necessary:$('#f_nec').checked,note:g('f_note')};
+  if(id){var i=db.finance.findIndex(function(x){return x.id===id});db.finance[i]=rec}
+  else db.finance.push(rec);
+  save();closeModal();render();
+}
+
+/* ================= 复盘 ================= */
+function vReview(){
+  var h='<h2 class="page-title">每周与每月复盘</h2>';
+  h+='<div class="btns" style="margin-bottom:14px"><button class="btn" onclick="genReview(\'每周\')">生成本周复盘草稿</button><button class="btn ghost" onclick="genReview(\'每月\')">生成本月复盘草稿</button></div>';
+  h+='<div class="hint">草稿由系统汇总对应周期的真实记录自动生成，未记录的内容会明确标注，不会编造。点击复盘可继续编辑，AI 建议一栏可把内容粘贴到 WorkBuddy 对话中由 AI 生成。</div>';
+  var arr=db.reviews.slice().sort(function(a,b){return (b.startDate||'').localeCompare(a.startDate||'')});
+  h+='<div class="card">';
+  if(!arr.length)h+='<div class="empty">暂无复盘记录</div>';
+  arr.forEach(function(r){
+    var logs=db.dailyLogs.filter(function(l){return l.date>=(r.startDate||'')&&l.date<=(r.endDate||'')});
+    h+='<div class="kcard" onclick="openReview(\''+r.id+'\')"><div class="t">'+esc(r.name)+' '+badge(r.period==='每周'?'blue':'purple',r.period)+'</div><div class="m">'+r.startDate+' ~ '+r.endDate+'　·　关联 '+logs.length+' 条每日记录</div></div>';
+  });
+  h+='</div>';
+  return h;
+}
+function genReview(period){
+  var s,e,label;
+  if(period==='每周'){var wr=weekRange();s=wr[0];e=wr[1];label='周复盘（'+s+' ~ '+e+'）'}
+  else{var mr=monthRange();s=mr[0];e=mr[1];label='月度总结（'+s.slice(0,7)+'）'}
+  var exist=db.reviews.find(function(r){return r.period===period&&r.startDate===s});
+  if(exist){openReview(exist.id);return}
+  var inR=function(d){return d&&d>=s&&d<=e};
+  var logs=db.dailyLogs.filter(function(l){return inR(l.date)}).sort(function(a,b){return a.date.localeCompare(b.date)});
+  var doneT=db.tasks.filter(function(x){return x.status==='已完成'&&inR(x.doneDate)});
+  var planT=db.tasks.filter(function(x){return x.planDate&&inR(x.planDate)&&x.status!=='已取消'});
+  var overdue=db.tasks.filter(function(x){return (x.status==='待办'||x.status==='进行中')&&x.dueDate&&x.dueDate<e});
+  var exL=logs.filter(function(l){return l.exerciseMin>0&&l.exerciseType!=='休息'});
+  var lnL=logs.filter(function(l){return l.learnMin>0});
+  var sqL=logs.filter(function(l){return l.sleepQuality>0});
+  var fin=db.finance.filter(function(f){return inR(f.date)});
+  var fsum=function(t){return fin.filter(function(f){return f.type===t}).reduce(function(a,b){return a+(+b.amount||0)},0)};
+  var exTypes={};exL.forEach(function(l){exTypes[l.exerciseType]=(exTypes[l.exerciseType]||0)+1});
+  var act=db.projects.filter(function(p){return p.status==='进行中'});
+  var work=(doneT.length?('已完成任务 '+doneT.length+' 项：\n'+doneT.map(function(x){return '· '+x.name+(x.output?'（产出：'+x.output+'）':'')}).join('\n')):'（本周期未记录已完成任务）')
+   +'\n\n本周期计划任务共 '+planT.length+' 项，其中已完成 '+planT.filter(function(x){return x.status==='已完成'}).length+' 项'+(overdue.length?'；截至周期结束时仍有 '+overdue.length+' 项未完成（可能原因需结合实际情况填写）':'')
+   +'\n\n项目进展：\n'+(act.length?act.map(function(p){var ts=projTasks(p.id),d=ts.filter(function(x){return x.status==='已完成'}).length;return '· '+p.name+'：'+(ts.length?d+'/'+ts.length+'（'+Math.round(d/ts.length*100)+'%）':'暂无关联任务')}).join('\n'):'（暂无进行中项目）');
+  var exTotal=exL.reduce(function(a,b){return a+b.exerciseMin},0);
+  var exTypeStr=Object.keys(exTypes).map(function(k){return k+'×'+exTypes[k]}).join('、');
+  var sqAvg=sqL.length?(sqL.reduce(function(a,b){return a+b.sleepQuality},0)/sqL.length).toFixed(1):null;
+  var health='运动 '+exL.length+' 次，共 '+exTotal+' 分钟'+(exTypeStr?'（'+exTypeStr+'）':'')
+   +'；\n睡眠质量平均 '+(sqAvg!==null?sqAvg+' 分（基于 '+sqL.length+' 条记录）':'（未记录）')
+   +(logs.length?'；\n本周期有 '+logs.length+' 天有每日记录。':'；\n（本周期无每日记录）');
+  var learn=lnL.length?('学习 '+lnL.length+' 次，共 '+lnL.reduce(function(a,b){return a+b.learnMin},0)+' 分钟；\n主题：'+lnL.map(function(l){return l.learnTopic||'（未填主题）'}).join('、')):'（本周期未记录学习）';
+  var life=logs.some(function(l){return l.insight})?logs.filter(function(l){return l.insight}).map(function(l){return l.date+'：'+l.insight}).join('\n'):'（本周期未记录感悟）';
+  var finTxt='收入 '+fsum('收入').toFixed(2)+' 元；普通支出 '+fsum('支出').toFixed(2)+' 元（不含还款与储蓄转账）；还款 '+fsum('还款').toFixed(2)+' 元；储蓄转入 '+fsum('储蓄转入').toFixed(2)+' 元、转出 '+fsum('储蓄转出').toFixed(2)+' 元（净储蓄 '+(fsum('储蓄转入')-fsum('储蓄转出')).toFixed(2)+' 元）。'+(fin.length?'':'（本周期未记录收支）');
+  var rec={id:uid(),name:label,period:period,startDate:s,endDate:e,work:work,health:health,learn:learn,life:life,fin:finTxt,
+   next:'（待填写：下阶段最值得优先推进的三件事）',
+   ai:'（待生成：可将本复盘内容复制到 WorkBuddy 对话中，由 AI 分析本周重要成果、延期原因、值得保留的习惯与下周三件优先事项）'};
+  db.reviews.push(rec);save();openReview(rec.id);
+}
+function openReview(id){
+  var r=db.reviews.find(function(x){return x.id===id});
+  if(!r)return;
+  var logs=db.dailyLogs.filter(function(l){return l.date>=(r.startDate||'')&&l.date<=(r.endDate||'')});
+  openModal('<h3>复盘 · '+esc(r.name)+'</h3>'
+   +'<div class="hint">已按开始/结束日期自动关联该周期的 '+logs.length+' 条每日记录。</div>'
+   +'<div class="frow3"><div class="f"><label>复盘周期</label>'+sel('r_period',['每周','每月'],r.period)+'</div>'
+   +'<div class="f"><label>开始日期</label><input type="date" id="r_s" value="'+r.startDate+'"></div>'
+   +'<div class="f"><label>结束日期</label><input type="date" id="r_e" value="'+r.endDate+'"></div></div>'
+   +'<div class="f"><label>复盘名称</label><input type="text" id="r_name" value="'+esc(r.name)+'"></div>'
+   +'<div class="f"><label>工作成果</label><textarea id="r_work" rows="4">'+esc(r.work)+'</textarea></div>'
+   +'<div class="f"><label>健康与运动总结</label><textarea id="r_health" rows="3">'+esc(r.health)+'</textarea></div>'
+   +'<div class="f"><label>学习总结</label><textarea id="r_learn" rows="3">'+esc(r.learn)+'</textarea></div>'
+   +'<div class="f"><label>生活感悟</label><textarea id="r_life" rows="3">'+esc(r.life)+'</textarea></div>'
+   +'<div class="f"><label>财务总结</label><textarea id="r_fin" rows="3">'+esc(r.fin)+'</textarea></div>'
+   +'<div class="f"><label>下阶段重点</label><textarea id="r_next" rows="3">'+esc(r.next)+'</textarea></div>'
+   +'<div class="f"><label>AI 复盘建议</label><textarea id="r_ai" rows="3">'+esc(r.ai)+'</textarea></div>'
+   +'<div class="btns"><button class="btn" onclick="saveReview(\''+r.id+'\')">保存</button>'
+   +'<button class="btn danger" onclick="delRec(\'reviews\',\''+r.id+'\')">删除</button>'
+   +'<button class="btn ghost" onclick="closeModal()">取消</button></div>');
+}
+function saveReview(id){
+  var g=function(i){return $('#'+i).value};
+  var r=db.reviews.find(function(x){return x.id===id});
+  r.name=g('r_name');r.period=g('r_period');r.startDate=g('r_s');r.endDate=g('r_e');
+  r.work=g('r_work');r.health=g('r_health');r.learn=g('r_learn');r.life=g('r_life');r.fin=g('r_fin');r.next=g('r_next');r.ai=g('r_ai');
+  save();closeModal();render();
+}
+
+/* ================= 通用删除 ================= */
+function delRec(col,id){
+  if(!confirm('确定删除这条记录？此操作不可撤销。'))return;
+  db[col]=db[col].filter(function(x){return x.id!==id});
+  save();closeModal();render();
+}
+
+/* ================= 设置 ================= */
+function vSettings(){
+  return '<h2 class="page-title">设置与数据</h2>'
+   +'<div class="note-box">所有数据保存在当前浏览器的本地存储（localStorage）中，不会上传。请定期导出备份，避免更换浏览器或清理缓存导致数据丢失。</div>'
+   +'<div class="card"><h4>数据统计</h4><div class="list-item"><span>每日记录</span><span>'+db.dailyLogs.length+' 条</span></div>'
+   +'<div class="list-item"><span>任务</span><span>'+db.tasks.length+' 条</span></div>'
+   +'<div class="list-item"><span>项目</span><span>'+db.projects.length+' 个</span></div>'
+   +'<div class="list-item"><span>知识与灵感</span><span>'+db.knowledge.length+' 条</span></div>'
+   +'<div class="list-item"><span>财务流水</span><span>'+db.finance.length+' 笔</span></div>'
+   +'<div class="list-item"><span>复盘</span><span>'+db.reviews.length+' 份</span></div></div>'
+   +'<div class="card"><h4>备份与恢复</h4><div class="btns">'
+   +'<button class="btn" onclick="exportData()">导出数据备份（JSON）</button>'
+   +'<label class="btn ghost" style="display:inline-block">导入恢复<input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>'
+   +'<button class="btn danger" onclick="clearAll()">清空全部数据</button></div></div>'
+   +'<div class="card"><h4>自动化说明</h4><div style="font-size:13px;color:#5c6270">'
+   +'· 每日记录：点击首页"新建今日记录"即可，系统自动防重复（每天仅一条）。<br>'
+   +'· 任务完成：状态改为"已完成"时自动填写完成日期，并自动汇总到项目进度与每日记录，无需手动同步。<br>'
+   +'· 每周/每月复盘：在"复盘"页一键生成草稿，数据全部来自真实记录。<br>'
+   +'· 到期提醒：本页面无法发送系统通知，请通过首页"已逾期任务"提醒区与任务页"逾期任务 / 未来 7 天"视图查看。</div></div>';
+}
+function exportData(){
+  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='个人工作台数据备份_'+today()+'.json';a.click();
+}
+function importData(inp){
+  var f=inp.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var d=JSON.parse(rd.result);
+      if(!d||!d.projects||!d.dailyLogs)throw 0;
+      if(!confirm('导入将覆盖当前全部数据，确定继续？'))return;
+      db=d;save();render();alert('导入成功');
+    }catch(e){alert('文件格式不正确，导入失败')}
+  };
+  rd.readAsText(f);
+}
+function clearAll(){
+  if(!confirm('确定清空全部数据？此操作不可撤销！'))return;
+  if(!confirm('再次确认：真的要清空全部数据吗？建议先导出备份。'))return;
+  localStorage.removeItem(LS);db=seed();save();render();
+}
+
+render();
+</script>
+</body>
+</html>
